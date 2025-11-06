@@ -38,10 +38,7 @@ public class MathService {
         return out;
     }
 
-    // ---------- ARITHMETIC EVALUATOR ----------
-    // Supports + - * / ^, parentheses, decimals, unary minus.
-    // Handles inputs with or without spaces. '+' in query (GET) becomes space - we strip spaces anyway.
-
+    // ARITHMETIC EVALUATOR
     private double evaluateArithmetic(String expression, List<String> steps) {
         if (expression == null) throw new IllegalArgumentException("Empty expression");
         String s = expression.replaceAll("\\s+", ""); // remove all spaces
@@ -58,7 +55,6 @@ public class MathService {
         for (int i = 0; i < s.length();) {
             char c = s.charAt(i);
 
-            // number (supports decimals)
             if (Character.isDigit(c) || c == '.') {
                 int j = i + 1;
                 boolean hasDot = (c == '.');
@@ -73,20 +69,16 @@ public class MathService {
                 continue;
             }
 
-            // parentheses
             if (c == '(') { ops.push("("); i++; continue; }
             if (c == ')') {
                 while (!ops.isEmpty() && !ops.peek().equals("(")) out.add(ops.pop());
                 if (ops.isEmpty()) throw new IllegalArgumentException("Mismatched ')'");
                 ops.pop(); i++; continue;
             }
-
-            // operator (+-*/^), handle unary minus
             if (isOpChar(c)) {
                 String op = String.valueOf(c);
-                // unary minus if at start, or after another operator or '('
                 if (op.equals("-") && (i == 0 || isOpChar(s.charAt(i-1)) || s.charAt(i-1) == '(')) {
-                    op = "u-"; // unary negation
+                    op = "u-";
                 }
 
                 while (!ops.isEmpty() && isOperator(ops.peek())) {
@@ -119,7 +111,7 @@ public class MathService {
     }
     private int prec(String op) {
         switch (op) {
-            case "u-": return 4;        // highest
+            case "u-": return 4;
             case "^":  return 3;
             case "*":
             case "/":  return 2;
@@ -129,7 +121,6 @@ public class MathService {
         }
     }
     private boolean isLeftAssoc(String op) {
-        // '^' and unary minus are right-associative
         return !(op.equals("^") || op.equals("u-"));
     }
 
@@ -170,10 +161,7 @@ public class MathService {
         return String.valueOf(x);
     }
 
-    // ---------- LINEAR EQUATION SOLVER ----------
-    // Supports forms like: 2x+3x-4=21, -x+10=4, 5+2x=17
-    // (No parentheses or variable*variable; keep it simple and interview-friendly)
-
+    //LINEAR EQUATION SOLVER
     private double solveLinearEquation(String eq) {
         if (eq == null) throw new IllegalArgumentException("Empty equation");
         String s = eq.replaceAll("\\s+", "");
@@ -189,13 +177,11 @@ public class MathService {
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Right side must be a number");
         }
-
-        // Convert "-" into "+-" to split by '+'
         left = left.replace("-", "+-");
         String[] terms = left.split("\\+");
 
-        double a = 0.0; // coefficient of x
-        double b = 0.0; // constant
+        double a = 0.0;
+        double b = 0.0;
 
         for (String t : terms) {
             if (t.isEmpty()) continue;

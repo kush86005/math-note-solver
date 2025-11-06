@@ -21,21 +21,19 @@ public class MathController {
         return "OK";
     }
 
-    // -------- Expression solver --------
-    // GET: for quick manual tests in the browser (handles + because we strip spaces server-side)
+    //Expression solver
     @GetMapping("/solve-expression")
     public ResponseEntity<Map<String, Object>> solveExpressionGet(@RequestParam("expression") String expr) {
         return ResponseEntity.ok(service.solveExpression(expr));
     }
 
-    // POST JSON: for UI and clients (no URL encoding issues)
     @PostMapping("/solve-expression")
     public ResponseEntity<Map<String, Object>> solveExpressionPost(@RequestBody Map<String, String> body) {
         String expr = body.getOrDefault("expression", "");
         return ResponseEntity.ok(service.solveExpression(expr));
     }
 
-    // -------- Equation solver --------
+    //Equation solver
     @GetMapping("/solve-equation")
     public ResponseEntity<Map<String, Object>> solveEquationGet(@RequestParam("equation") String eq) {
         return ResponseEntity.ok(service.solveEquation(eq));
