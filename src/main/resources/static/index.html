@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <title>Math Note Solver</title>
+    <style>
+        :root{--bg:#0f172a;--panel:#101826;--muted:#9aa4b2;--line:rgba(255,255,255,.1);--text:#eef2f8;--accent:#7dd3fc}
+        *{box-sizing:border-box} body{margin:0;background:linear-gradient(135deg,#0f172a,#0b1120 55%);color:var(--text);font-family:Inter,system-ui,Segoe UI,Arial}
+        .wrap{max-width:900px;margin:36px auto;padding:0 16px}
+        .card{background:#0b1220;border:1px solid var(--line);border-radius:14px;padding:16px}
+        h1{margin:0 0 4px;font-size:22px} .sub{color:var(--muted);font-size:13px}
+        .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:12px}
+        .field{display:flex;flex-direction:column;gap:6px}
+        label{font-size:12px;color:var(--muted)}
+        input,textarea{background:#091224;border:1px solid var(--line);color:var(--text);border-radius:10px;padding:10px 12px}
+        button{border:0;background:var(--accent);color:#05131a;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer}
+        .row{display:flex;gap:10px;align-items:center;margin-top:8px}
+        .out{white-space:pre-wrap;background:#091224;border:1px dashed var(--line);padding:12px;border-radius:10px;margin-top:10px;min-height:56px}
+        ul{margin:8px 0 0 16px;padding:0} .hint{color:var(--muted);font-size:12px;margin-left:6px}
+        @media (max-width:860px){ .grid{grid-template-columns:1fr;} }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <div class="card">
+        <h1>Math Note Solver</h1>
+        <p class="sub">Evaluate expressions and solve simple linear equations in <b>x</b>. Supports + − × ÷ ^ and parentheses for expressions. Equations like <code>2x+3x-4=21</code>.</p>
+    </div>
+
+    <div class="grid">
+        <div class="card">
+            <h3 style="margin:0 0 8px">Expression</h3>
+            <div class="field">
+                <label for="expr">Enter expression</label>
+                <input id="expr" placeholder="Examples: 5+3*2, -(5+2)^2/7">
+            </div>
+            <div class="row">
+                <button id="btnExpr">Solve Expression</button>
+                <span id="ping1" class="hint"></span>
+            </div>
+            <div id="exprResult" class="out"></div>
+            <div class="out" id="exprSteps" style="margin-top:8px"></div>
+        </div>
+
+        <div class="card">
+            <h3 style="margin:0 0 8px">Equation</h3>
+            <div class="field">
+                <label for="eq">Enter linear equation in x</label>
+                <input id="eq" placeholder="Examples: 2x+3x-4=21, -x+10=4">
+            </div>
+            <div class="row">
+                <button id="btnEq">Solve Equation</button>
+                <span id="ping2" class="hint"></span>
+            </div>
+            <div id="eqResult" class="out"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const $ = id => document.getElementById(id);
+
+    let exprHistory = [];
+    let eqHistory = [];
+
+    function updateHistory() {
+      $('exprSteps').style.border = exprHistory.length ? "1px dashed var(--line)" : "none";
+      $('eqResult').style.border = eqHistory.length ? "1px dashed var(--line)" : "none";
+    }
+
+    async function ping() {
+      try {
+        const r = await fetch('/api/health');
+        const ok = r.ok;
+        $('ping1').textContent = ok ? 'Connected ' : 'Backend Offline ';
+        $('ping2').textContent = $('ping1').textContent;
+      } catch {
+        $('ping1').textContent = 'Backend Offline ';
+        $('ping2').textContent = 'Backend Offline ';
+      }
+    }
+
+    $('btnExpr').onclick = async () => {
+      const expr = $('expr').value.trim();
+      $('exprResult').textContent = 'Solving...';
+      $('exprSteps').textContent = '';
+      try {
+        const r = await fetch('/api/solve-expression', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ expression: expr })
+        });
+        const data = await r.json();
+        if (!data.ok) { $('exprResult').textContent = 'Error: ' + (data.error || 'Invalid'); return; }
+
+        $('exprResult').textContent = 'Result: ' + data.result;
+        const steps = (data.steps || []).map(s => '• ' + s).join('\n');
+        $('exprSteps').textContent = steps || 'No steps.';
+
+        exprHistory.unshift(expr + " = " + data.result);
+        if (exprHistory.length > 5) exprHistory.pop();
+        updateHistory();
+      } catch {
+        $('exprResult').textContent = 'Server Error';
+      }
+    };
+
+    $('btnEq').onclick = async () => {
+      const eq = $('eq').value.trim();
+      $('eqResult').textContent = 'Solving...';
+      try {
+        const r = await fetch('/api/solve-equation', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ equation: eq })
+        });
+        const data = await r.json();
+        if (!data.ok) { $('eqResult').textContent = 'Error: ' + (data.error || 'Invalid'); return; }
+
+        $('eqResult').textContent = 'x = ' + data.x;
+
+        eqHistory.unshift(eq + " → x = " + data.x);
+        if (eqHistory.length > 5) eqHistory.pop();
+        updateHistory();
+      } catch {
+        $('eqResult').textContent = 'Server Error';
+      }
+    };
+
+    ping();
+</script>
+</body>
+</html>
