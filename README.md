@@ -1,7 +1,6 @@
 # Math Note Solver ✍️
 
-![App Preview](./Screenshot/math-note.png)
-
+![App Preview](./Screenshot/Math-note.png)
 
 A full-stack web application that solves arithmetic expressions and linear equations...
 
