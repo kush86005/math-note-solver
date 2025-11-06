@@ -1,5 +1,9 @@
 # Math Note Solver ✍️
-A full-stack web application that solves **arithmetic expressions** and **linear equations** with **step-by-step explanations**.
+
+![App Preview](./math-note.png)
+
+A full-stack web application that solves arithmetic expressions and linear equations...
+
 
 ### ✨ Features
 - Solve expressions like `5+3*2`, `(10/2)+3*4`, `3+4*2^2`, etc.
