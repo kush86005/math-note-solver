@@ -1,16 +1,21 @@
 # Math Note Solver ✍️
 
+### 🚀 Live Demo  
+https://math-note-solver-production.up.railway.app
+
 ![App Preview](./Screenshot/Math-note.png)
 
-A full-stack web application that solves arithmetic expressions and linear equations...
+A full-stack web application that solves arithmetic expressions and linear equations with step-by-step explanation.
 
+---
 
 ### ✨ Features
-- Solve expressions like `5+3*2`, `(10/2)+3*4`, `3+4*2^2`, etc.
-- Solve linear equations like `2x+3x-4=21`, `-x+10=4`, etc.
-- Shows **every calculation step** to improve understanding.
-- Built using **Java + Spring Boot** backend and **HTML/CSS/JS** frontend.
-- Deployed as a single runnable `jar` using Spring Boot static resource hosting.
+- Solve expressions like `5+3*2`, `(10/2)+3*4`, `3+4*2^2`
+- Solve linear equations like `2x+3x-4=21`, `-x+10=4`
+- Shows **every calculation step** for better understanding
+- Backend: **Java + Spring Boot**
+- Frontend: **HTML/CSS/JS** with Fetch API
+- Runs fully in browser + Spring API (no database)
 
 ---
 
@@ -18,7 +23,7 @@ A full-stack web application that solves arithmetic expressions and linear equat
 | Layer | Technology |
 |------|-------------|
 | Backend | Java, Spring Boot, Maven |
-| Frontend | HTML, CSS, JavaScript (Fetch API) |
+| Frontend | HTML, CSS, JavaScript |
 | Deployment | Railway (Free Cloud Hosting) |
 
 ---
